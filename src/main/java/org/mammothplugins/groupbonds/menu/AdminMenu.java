@@ -1,7 +1,6 @@
 package org.mammothplugins.groupbonds.menu;
 
 import com.earth2me.essentials.libs.checkerframework.checker.nullness.qual.Nullable;
-import org.bukkit.Material;
 import org.bukkit.conversations.ConversationAbandonedEvent;
 import org.bukkit.conversations.ConversationContext;
 import org.bukkit.conversations.Prompt;
@@ -599,14 +598,14 @@ public class AdminMenu extends Menu {
             }
         }
 
-        private class SelectIconMenu extends MenuPagged<Material> {
+        private class SelectIconMenu extends MenuPagged<CompMaterial> {
             private Button backButton;
             private Button changeIconButton;
             private BondBase bondBase;
 
 
             protected SelectIconMenu(BondBase bondBase) {
-                super(Arrays.asList(Material.values()).stream().filter((material) -> {
+                super(Arrays.asList(CompMaterial.values()).stream().filter((material) -> {
                     return (!material.name().contains("WALL") && !material.name().contains("STEM") && !material.name().contains("POTTED")
                             && !material.name().contains("BED") && !material.name().contains("_OFF") && !material.name().contains("_ON") && !material.name().contains("SOIL")
                             && !material.name().contains("AIR") && !material.name().contains("SIGN_POST"));
@@ -634,11 +633,14 @@ public class AdminMenu extends Menu {
                 };
             }
 
-            protected ItemStack convertToItemStack(Material material) {
-                return ItemCreator.of(CompMaterial.fromMaterial(material), "&3&l" + material.name(), new String[]{"&7This item will be the bond's", "&7display icon in all menus.", "  ", "&f(Click to Select)"}).glow(this.bondBase.getIcon().equals(material.name())).make();
+            @Override
+            protected ItemStack convertToItemStack(CompMaterial material) {
+                return ItemCreator.of(CompMaterial.fromString(material.name()), "&3&l" + material.name(), new String[]{"&7This item will be the bond's", "&7display icon in all menus.", "  ", "&f(Click to Select)"}).glow(this.bondBase.getIcon().equals(material.name())).make();
+
             }
 
-            protected void onPageClick(Player player, Material material, ClickType clickType) {
+            @Override
+            protected void onPageClick(Player player, CompMaterial material, ClickType clickType) {
                 if (clickType.isLeftClick()) {
                     this.bondBase.setIcon(material.name());
                     (AdminMenu.this.new EditBondMenu(this.bondBase)).displayTo(player);
@@ -2572,8 +2574,15 @@ public class AdminMenu extends Menu {
 
             protected ParticleListMenu(BondBase bondBase, BondBase.TierCache tierCache, BondBase.TierCache.PatternCache patternCache) {
                 super((Iterable) Arrays.asList(CompParticle.values()).stream().filter((particle) -> {
-                    return particle != CompParticle.WATER_BUBBLE && particle != CompParticle.WATER_BUBBLE && particle != CompParticle.WATER_WAKE && particle != CompParticle.SUSPENDED && particle != CompParticle.SWEEP_ATTACK && particle != CompParticle.SUSPENDED_DEPTH && particle != CompParticle.CRIT && particle != CompParticle.CRIT_MAGIC && particle != CompParticle.FOOTSTEP && particle != CompParticle.REDSTONE && particle != CompParticle.BARRIER && particle != CompParticle.ITEM_CRACK && particle != CompParticle.ITEM_TAKE && particle != CompParticle.MOB_APPEARANCE && particle != CompParticle.BLOCK_CRACK && particle != CompParticle.BLOCK_DUST && particle != CompParticle.FALLING_DUST && particle != CompParticle.BUBBLE_POP && particle != CompParticle.BUBBLE_COLUMN_UP && particle != CompParticle.CURRENT_DOWN && particle != CompParticle.DUST_COLOR_TRANSITION && particle != CompParticle.VIBRATION && particle != CompParticle.DRIPPING_DRIPSTONE_LAVA;
+                    return (particle.name().contains("EXPLOSION") || particle.name().contains("FIREWORKS_SPARK") || particle.name().contains("SMOKE_NORMAL") || particle.name().contains("SMOKE_LARGE")
+                            || particle.name().contains("SPELL") || particle.name().contains("DRIP_WATER") || particle.name().contains("DRIP_LAVA") || particle.name().contains("VILLIAGER")
+                            || particle.name().contains("TOWN_AURA") || particle.name().contains("NOTE") || particle.name().contains("PORTAL") || particle.name().contains("ENCHANTMENT_TABLE") || particle.name().contains("FLAME") || particle.name().contains("LAVA")
+                            || particle.name().contains("CLOUD") || particle.name().contains("SNOWBALL") || particle.name().contains("SNOW_SHOVEL") || particle.name().contains("SLIME") || particle.name().contains("HEART") || particle.name().contains("HEART") || particle.name().contains("WATER_BUBBLE") || particle.name().contains("FOOTSTEP") || particle.name().contains("SUSPENDED_DEPTH")
+                    ) && !particle.name().contains("SOUL_FIRE_FLAME") && !particle.name().contains("DRIPSTONE") && !particle.name().contains("REVERSE") && !particle.name().contains("LANDING") && !particle.name().contains("FALLING") && !particle.name().contains("SMALL_FLAME");
                 }).collect(Collectors.toList()));
+
+                //return particle != CompParticle.WATER_BUBBLE && particle != CompParticle.WATER_BUBBLE && particle != CompParticle.WATER_WAKE && particle != CompParticle.SUSPENDED && particle != CompParticle.SWEEP_ATTACK && particle != CompParticle.SUSPENDED_DEPTH && particle != CompParticle.CRIT && particle != CompParticle.CRIT_MAGIC && particle != CompParticle.FOOTSTEP && particle != CompParticle.REDSTONE && particle != CompParticle.BARRIER && particle != CompParticle.ITEM_CRACK && particle != CompParticle.ITEM_TAKE && particle != CompParticle.MOB_APPEARANCE && particle != CompParticle.BLOCK_CRACK && particle != CompParticle.BLOCK_DUST && particle != CompParticle.FALLING_DUST && particle != CompParticle.BUBBLE_POP && particle != CompParticle.BUBBLE_COLUMN_UP && particle != CompParticle.CURRENT_DOWN && particle != CompParticle.DUST_COLOR_TRANSITION && particle != CompParticle.VIBRATION && particle != CompParticle.DRIPPING_DRIPSTONE_LAVA;
+
                 this.setTitle("&3&lSelect a Particle");
                 this.bondBase = bondBase;
                 this.tierCache = tierCache;
@@ -2622,6 +2631,15 @@ public class AdminMenu extends Menu {
                 String particleName = particle.name();
                 CompMaterial material = CompMaterial.BARRIER;
                 int amount = 1;
+                if (particle.name().equals("FOOTSTEP")) {
+                    material = CompMaterial.LEATHER_BOOTS;
+                }
+                if (particle.name().equals("WATER_BUBBLE")) {
+                    material = CompMaterial.FISHING_ROD;
+                }
+                if (particle.name().equals("SUSPENDED_DEPTH")) {
+                    material = CompMaterial.BEDROCK;
+                }
                 if (particle.name().equals("EXPLOSION_NORMAL")) {
                     material = CompMaterial.TNT;
                 }
@@ -2672,7 +2690,7 @@ public class AdminMenu extends Menu {
                 }
 
                 if (particle.name().equals("SPELL_WITCH")) {
-                    material = CompMaterial.SPLASH_POTION;
+                    material = CompMaterial.BREWING_STAND;
                 }
 
                 if (particle.name().equals("DRIP_WATER")) {

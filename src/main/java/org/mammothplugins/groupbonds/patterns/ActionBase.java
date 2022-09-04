@@ -1,7 +1,6 @@
 package org.mammothplugins.groupbonds.patterns;
 
-import org.mammothplugins.groupbonds.patterns.actions.BreakBlockAction;
-import org.mammothplugins.groupbonds.patterns.actions.ShiftAction;
+import org.mammothplugins.groupbonds.patterns.actions.*;
 import org.mineacademy.fo.FileUtil;
 import org.mineacademy.fo.exception.FoException;
 import org.mineacademy.fo.settings.YamlConfig;
@@ -13,7 +12,18 @@ public class ActionBase extends YamlConfig {
     private static final Map<String, ActionBase> actions = new HashMap();
 
     public static final ActionBase BREAKBLOCK = new BreakBlockAction();
+    public static final ActionBase CONSUME = new ConsumeAction();
+    public static final ActionBase ITEMDROP = new ItemDropAction();
+    public static final ActionBase JUMP = new JumpAction();
     public static final ActionBase SHIFT = new ShiftAction();
+    public static final ActionBase SPRINT = new SprintingAction();
+    public static final ActionBase LEFTCLICK = new LeftClickAction();
+    public static final ActionBase RIGHTCLICK = new RightClickAction();
+    public static final ActionBase PICKUPARROW = new PickupArrowAction();
+    public static final ActionBase PICKUPITEM = new PickupItemAction();
+    public static final ActionBase PLAYERDAMAGE = new PlayerDamageAction();
+
+    public static final ActionBase RIGHTCLICKENTITY = new RightClickEntityAction();
 
     private String name;
     private String type;
@@ -91,13 +101,15 @@ public class ActionBase extends YamlConfig {
         /* //todo Come Back to this
         sortedActions.remove("Automatic");
         sortedActions.add(0, "Automatic");
+
+         */
         sortedActions.remove("LeftClick");
         sortedActions.add(1, "LeftClick");
         sortedActions.remove("RightClick Entity");
         sortedActions.add(2, "RightClick Entity");
         sortedActions.remove("RightClick");
         sortedActions.add(3, "RightClick");
-         */
+
         return sortedActions;
     }
 
