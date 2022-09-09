@@ -108,14 +108,6 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
-                <configuration>
-                    <release>17</release>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
 
                 <!-- Change version to the latest one from
@@ -128,7 +120,7 @@
 
                 <!-- Change version to the latest one from
                      https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-compiler-plugin -->
-                <version>3.10.1</version>
+                <version>3.8.1</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>

@@ -1,0 +1,17 @@
+Group Bonds Update:
+
+Actions:
++DeathAction
++LevelChange Action
+-StayingStillAction
+
+TODO:
++ Fix Item menus: Bond, Actions, Custom Powers
++ Shapes
++ Powers
++ More friendly common GUI
++ Economy
+
+Possible:
+= Display button: With NPCS?
+= Advanced settings in Menus/ easier to understand

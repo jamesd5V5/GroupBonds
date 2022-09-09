@@ -3,6 +3,7 @@ package org.mammothplugins.groupbonds;
 import org.mammothplugins.groupbonds.bonds.BondBase;
 import org.mammothplugins.groupbonds.command.GroupCommands;
 import org.mammothplugins.groupbonds.events.ActionEvents;
+import org.mammothplugins.groupbonds.events.JoinAndLeaveEvents;
 import org.mammothplugins.groupbonds.patterns.ActionBase;
 import org.mammothplugins.groupbonds.patterns.PowerBase;
 import org.mammothplugins.groupbonds.patterns.ShapeBase;
@@ -12,6 +13,8 @@ import org.mineacademy.fo.model.HookManager;
 import org.mineacademy.fo.plugin.SimplePlugin;
 
 public class GroupBonds extends SimplePlugin {
+
+    private ActionEvents actionEvents;
 
     @Override
     protected void onPluginStart() {
@@ -24,6 +27,10 @@ public class GroupBonds extends SimplePlugin {
         PositionBase.onStart();
 
         this.registerEvents(new ActionEvents());
+        this.actionEvents = new ActionEvents(); //For Automatic/moving Actions
+        this.actionEvents.runTaskTimer(getInstance(), 20L, 20L);
+
+        this.registerEvents(new JoinAndLeaveEvents());
     }
 
     @Override

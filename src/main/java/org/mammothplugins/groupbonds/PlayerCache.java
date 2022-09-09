@@ -104,7 +104,7 @@ public final class PlayerCache extends YamlConfig {
     public void setHasLeftBeforeExitCommand(BondBase bondBase, boolean hasLeftBeforeExitCommand) {
         final BondCache bondCache = this.getBond(bondBase);
         bondCache.setHasLeftBeforeExitCommand(hasLeftBeforeExitCommand);
-        this.save("Bonds", this.bondCaches); //todo IDK if this will work
+        this.save(); //todo IDK if this will work
     }
 
     /* ------------------------------------------------------------------------------- */

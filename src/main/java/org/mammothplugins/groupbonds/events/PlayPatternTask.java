@@ -83,7 +83,6 @@ public class PlayPatternTask extends BukkitRunnable {
                 activatedEvent = true;
                 resetEvent = true;
             }
-
             if (actionBase.getType().equals("Selective") && target instanceof LivingEntity) {
                 LivingEntity livingTarget = (LivingEntity) target;
                 if (actionName.equals(action)) {

@@ -683,6 +683,13 @@ public class BondBase extends YamlConfig {
                 return this.powerName;
             }
 
+            public boolean hasPower() {
+                if (this.getPowerName().equals("NONE"))
+                    return false;
+                else
+                    return true;
+            }
+
             public int getStrength() {
                 return this.strength;
             }

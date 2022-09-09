@@ -8,10 +8,12 @@ org\mammothplugins\groupbonds\PlayerCache$BondCache.class
 org\mammothplugins\groupbonds\menu\AdminMenu$PatternEditMenu$ActionListMenu$3.class
 org\mammothplugins\groupbonds\menu\AdminMenu$EditBondsMenu$BondDuplicateMenu.class
 org\mammothplugins\groupbonds\menu\AdminMenu$PatternEditMenu$7.class
+org\mammothplugins\groupbonds\patterns\actions\LeftClickEntityAction.class
 org\mammothplugins\groupbonds\menu\AdminMenu$PatternEditMenu$DurationConversation$BondDurationConversation.class
 org\mammothplugins\groupbonds\patterns\shapes\PositionBase.class
 org\mammothplugins\groupbonds\menu\AdminMenu$PatternEditMenu$PowerEditMenu$PowerRemoveConversation.class
 org\mammothplugins\groupbonds\patterns\actions\PickupItemAction.class
+org\mammothplugins\groupbonds\events\JoinAndLeaveEvents.class
 org\mammothplugins\groupbonds\patterns\powers\TossPower.class
 org\mammothplugins\groupbonds\menu\AdminMenu$EditBondMenu$8.class
 org\mammothplugins\groupbonds\menu\AdminMenu$PatternListMenu.class
@@ -107,6 +109,7 @@ org\mammothplugins\groupbonds\patterns\shapes\positions\FriendHeadPosition.class
 org\mammothplugins\groupbonds\menu\AdminMenu$PatternEditMenu$PowerListMenu$2.class
 org\mammothplugins\groupbonds\menu\AdminMenu$EditBondsMenu$3.class
 org\mammothplugins\groupbonds\menu\AdminMenu$PatternListMenu$RemovePatternConversation.class
+org\mammothplugins\groupbonds\patterns\actions\AutomaticAction.class
 org\mammothplugins\groupbonds\menu\AdminMenu$PatternEditMenu$PowerEditMenu$PowerLoreConversation$PowerSetLoreConversation.class
 org\mammothplugins\groupbonds\patterns\shapes\DotShape.class
 org\mammothplugins\groupbonds\bonds\BondBase.class
@@ -120,7 +123,6 @@ org\mammothplugins\groupbonds\menu\AdminMenu$EditBondMenu$BondLoreConversation.c
 org\mammothplugins\groupbonds\patterns\actions\RightClickAction.class
 org\mammothplugins\groupbonds\menu\AdminMenu$PatternEditMenu$CustomPowerConversation.class
 org\mammothplugins\groupbonds\menu\AdminMenu$TierListMenu$TierRemoveConversation.class
-org\mammothplugins\groupbonds\patterns\actions\PickupArrowAction.class
 org\mammothplugins\groupbonds\menu\AdminMenu$PatternEditMenu$PowerEditMenu$7.class
 org\mammothplugins\groupbonds\menu\AdminMenu$PatternEditMenu$3.class
 org\mammothplugins\groupbonds\events\PlayPatternTask.class
@@ -133,8 +135,11 @@ org\mammothplugins\groupbonds\menu\AdminMenu$TierPatternPowerMenu$1.class
 org\mammothplugins\groupbonds\menu\AdminMenu$PatternEditMenu$PowerEditMenu$4.class
 org\mammothplugins\groupbonds\menu\AdminMenu$PatternListMenu$PatternDuplicateMenu$1.class
 org\mammothplugins\groupbonds\menu\AdminMenu$TierPatternPowerMenu$4.class
+org\mammothplugins\groupbonds\events\CheckMovingTask.class
+org\mammothplugins\groupbonds\patterns\actions\LevelChangeAction.class
 org\mammothplugins\groupbonds\menu\AdminMenu$RangeConversation.class
 org\mammothplugins\groupbonds\menu\AdminMenu$PatternEditMenu$PowerEditMenu$1.class
+org\mammothplugins\groupbonds\patterns\actions\MoveAction.class
 org\mammothplugins\groupbonds\menu\AdminMenu$PatternEditMenu$PowerEditMenu$PowerCommandConversation.class
 org\mammothplugins\groupbonds\menu\AdminMenu$PatternEditMenu$ShapeListMenu$1.class
 org\mammothplugins\groupbonds\menu\AdminMenu$TierPatternPowerMenu$3.class
@@ -143,6 +148,7 @@ org\mammothplugins\groupbonds\menu\AdminMenu$EditBondsMenu$1.class
 org\mammothplugins\groupbonds\menu\AdminMenu$PatternEditMenu$PowerEditMenu$PowerExitCommandConversation$NewExitCommandConversation.class
 org\mammothplugins\groupbonds\menu\AdminMenu$EditBondMenu$SelectIconMenu$1.class
 org\mammothplugins\groupbonds\menu\AdminMenu$EditBondMenu$6.class
+org\mammothplugins\groupbonds\patterns\actions\DeathAction.class
 org\mammothplugins\groupbonds\patterns\shapes\DotShape$1.class
 org\mammothplugins\groupbonds\patterns\shapes\positions\PlayerPosition.class
 org\mammothplugins\groupbonds\api\SampleAPI.class
@@ -159,6 +165,7 @@ org\mammothplugins\groupbonds\patterns\actions\LeftClickAction.class
 org\mammothplugins\groupbonds\patterns\shapes\positions\PlayerHeadPosition.class
 org\mammothplugins\groupbonds\menu\AdminMenu$PatternEditMenu$5.class
 org\mammothplugins\groupbonds\patterns\actions\JumpAction.class
+org\mammothplugins\groupbonds\events\JoinAndLeaveEvents$1.class
 org\mammothplugins\groupbonds\menu\AdminMenu$PatternEditMenu$DurationConversation.class
 org\mammothplugins\groupbonds\menu\AdminMenu$PatternEditMenu$PowerEditMenu$2.class
 org\mammothplugins\groupbonds\menu\AdminMenu$TierPatternPowerMenu$2.class

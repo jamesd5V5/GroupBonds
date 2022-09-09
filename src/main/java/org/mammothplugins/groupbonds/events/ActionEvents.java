@@ -3,19 +3,25 @@ package org.mammothplugins.groupbonds.events;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.mammothplugins.groupbonds.PlayerCache;
 import org.mammothplugins.groupbonds.bonds.BondBase;
 import org.mineacademy.fo.remain.CompMaterial;
+import org.mineacademy.fo.remain.Remain;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ActionEvents implements Listener {
+public class ActionEvents extends BukkitRunnable implements Listener {
 
     public static void callAction(Player player, String actionName) {
         callActionWithCancel(player, actionName);
@@ -72,6 +78,16 @@ public class ActionEvents implements Listener {
     }
 
 
+    @Override
+    public void run() {
+        for (Player player : Remain.getOnlinePlayers()) {
+            callAction(player, "Automatic");
+            if (!(Boolean) CheckMovingTask.getMovingPlayers().get(player.getUniqueId())) {
+                ActionEvents.callAction(player, "Staying Still");
+            }
+        }
+    }
+
     @EventHandler
     public void onPlayerBreakBlockEvent(BlockBreakEvent event) {
         Player player = event.getPlayer();
@@ -82,6 +98,12 @@ public class ActionEvents implements Listener {
     public void onPlayerConsume(PlayerItemConsumeEvent event) {
         Player player = event.getPlayer();
         callActionWithCancel(player, "Consume");
+    }
+
+    @EventHandler
+    public void onPlayerDeath(PlayerDeathEvent event) {
+        Player player = event.getEntity();
+        callAction(player, "Death");
     }
 
     @EventHandler
@@ -100,12 +122,11 @@ public class ActionEvents implements Listener {
             callAction(player, "Jump");
         }
 
-        //callAction(player, "Move");
-        //if (CheckingMovementTask.getMovingPlayers().containsKey(player.getUniqueId()) && !(Boolean)CheckingMovementTask.getMovingPlayers().get(player.getUniqueId())) {
-        //    CheckingMovementTask.setMovingPlayers(player.getUniqueId(), true);
-        //}
-
-
+        callAction(player, "Move");
+        if (CheckMovingTask.getMovingPlayers().containsKey(player.getUniqueId()) && !(Boolean) CheckMovingTask.getMovingPlayers().get(player.getUniqueId())) {
+            CheckMovingTask.setMovingPlayer(player.getUniqueId(), true);
+            callAction(player, "Move");
+        }
     }
 
     @EventHandler
@@ -121,13 +142,21 @@ public class ActionEvents implements Listener {
     }
 
     @EventHandler
+    public void onPlayerDeath(PlayerLevelChangeEvent event) {
+        Player player = event.getPlayer();
+        callAction(player, "LevelChange");
+    }
+
+    @EventHandler
     public void onPlayerLeftClick(EntityDamageByEntityEvent event) {
         if (event.getDamager() instanceof Player) {
             Player player = (Player) event.getDamager();
-            List<PlayPatternTask> playPatternTaskList = callActionWithCancel(player, "LeftClick");
-            for (PlayPatternTask playPatternTask : playPatternTaskList)
-                if (playPatternTask.isACancelledEvent())
-                    event.setCancelled(playPatternTask.isACancelledEvent());
+            if (event.getEntity() instanceof LivingEntity) {
+                List<PlayPatternTask> playPatternTaskList = callActionWithCancel(player, "LeftClick Entity", event.getEntity());
+                for (PlayPatternTask playPatternTask : playPatternTaskList)
+                    if (playPatternTask.isACancelledEvent())
+                        event.setCancelled(playPatternTask.isACancelledEvent());
+            }
         }
     }
 
@@ -140,34 +169,23 @@ public class ActionEvents implements Listener {
                 event.setCancelled(playPatternTask.isACancelledEvent());
     }
 
-    /*
-        @EventHandler
-        public void onClickAir(PlayerInteractEvent event) {
-            Player player = event.getPlayer();
-            if (event.getAction().equals(Action.RIGHT_CLICK_AIR)) {
-                List<PlayPatternTask> playPatternTaskList = callActionWithCancel(player, "RightClick");
-                for (PlayPatternTask playPatternTask : playPatternTaskList)
-                    if (playPatternTask.isACancelledEvent())
-                        event.setCancelled(playPatternTask.isACancelledEvent());
-            }
-
-            if (event.getAction().equals(Action.LEFT_CLICK_AIR)) {
-                List<PlayPatternTask> playPatternTaskList = callActionWithCancel(player, "LeftClick");
-                for (PlayPatternTask playPatternTask : playPatternTaskList)
-                    if (playPatternTask.isACancelledEvent())
-                        event.setCancelled(playPatternTask.isACancelledEvent());
-            }
-
+    @EventHandler
+    public void onClickAir(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+        if (event.getAction().equals(Action.RIGHT_CLICK_AIR)) {
+            List<PlayPatternTask> playPatternTaskList = callActionWithCancel(player, "RightClick");
+            for (PlayPatternTask playPatternTask : playPatternTaskList)
+                if (playPatternTask.isACancelledEvent())
+                    event.setCancelled(playPatternTask.isACancelledEvent());
         }
 
-
-
-
-        @EventHandler
-        public void onPlayerPickUpArrowEvent(PlayerPickupArrowEvent event) {
-            Player player = event.getPlayer();
-            callActionWithCancel(player, "PickupArrow");
+        if (event.getAction().equals(Action.LEFT_CLICK_AIR)) {
+            List<PlayPatternTask> playPatternTaskList = callActionWithCancel(player, "LeftClick");
+            for (PlayPatternTask playPatternTask : playPatternTaskList)
+                if (playPatternTask.isACancelledEvent())
+                    event.setCancelled(playPatternTask.isACancelledEvent());
         }
+    }
 
     @EventHandler
     public void onPlayerPickUpItemEvent(PlayerPickupItemEvent event) {
@@ -175,9 +193,6 @@ public class ActionEvents implements Listener {
         callActionWithCancel(player, "PickupItem");
     }
 
-     */
-
-/*
     @EventHandler
     public void onPlayerDamaged(EntityDamageByEntityEvent event) {
         if (event.getEntity() instanceof Player) {
@@ -193,10 +208,6 @@ public class ActionEvents implements Listener {
             for (PlayPatternTask playPatternTask : playPatternTaskList)
                 if (playPatternTask.isACancelledEvent())
                     event.setCancelled(playPatternTask.isACancelledEvent());
-
         }
     }
-
- */
-
 }

@@ -6,7 +6,7 @@ public class RightClickAction extends ActionBase {
     public RightClickAction() {
         super("RightClick");
         this.setIcon("CARROT_ON_A_STICK");
-        this.setAmount(2);
+        this.setAmount(1);
         this.setType("General");
     }
 }

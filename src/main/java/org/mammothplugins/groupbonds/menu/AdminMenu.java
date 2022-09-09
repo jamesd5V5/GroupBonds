@@ -606,9 +606,12 @@ public class AdminMenu extends Menu {
 
             protected SelectIconMenu(BondBase bondBase) {
                 super(Arrays.asList(CompMaterial.values()).stream().filter((material) -> {
-                    return (!material.name().contains("WALL") && !material.name().contains("STEM") && !material.name().contains("POTTED")
+                    return material.getMaterial().isItem();
+                    /*return (!material.name().contains("WALL") && !material.name().contains("STEM") && !material.name().contains("POTTED")
                             && !material.name().contains("BED") && !material.name().contains("_OFF") && !material.name().contains("_ON") && !material.name().contains("SOIL")
                             && !material.name().contains("AIR") && !material.name().contains("SIGN_POST"));
+
+                     */
 
                 }).collect(Collectors.toList()));
                 this.setTitle("&3&lSelect An Icon");
