@@ -1,6 +1,7 @@
 package org.mammothplugins.groupbonds.menu;
 
 import com.earth2me.essentials.libs.checkerframework.checker.nullness.qual.Nullable;
+import org.bukkit.Material;
 import org.bukkit.conversations.ConversationAbandonedEvent;
 import org.bukkit.conversations.ConversationContext;
 import org.bukkit.conversations.Prompt;
@@ -598,21 +599,14 @@ public class AdminMenu extends Menu {
             }
         }
 
-        private class SelectIconMenu extends MenuPagged<CompMaterial> {
+        private class SelectIconMenu extends MenuPagged<Material> {
             private Button backButton;
             private Button changeIconButton;
             private BondBase bondBase;
 
-
-            protected SelectIconMenu(BondBase bondBase) {
-                super(Arrays.asList(CompMaterial.values()).stream().filter((material) -> {
-                    return material.getMaterial().isItem();
-                    /*return (!material.name().contains("WALL") && !material.name().contains("STEM") && !material.name().contains("POTTED")
-                            && !material.name().contains("BED") && !material.name().contains("_OFF") && !material.name().contains("_ON") && !material.name().contains("SOIL")
-                            && !material.name().contains("AIR") && !material.name().contains("SIGN_POST"));
-
-                     */
-
+            protected SelectIconMenu(final BondBase bondBase) {
+                super((Iterable) Arrays.asList(Material.values()).stream().filter((material) -> {
+                    return NonItems.isAnItem(material);
                 }).collect(Collectors.toList()));
                 this.setTitle("&3&lSelect An Icon");
                 this.bondBase = bondBase;
@@ -623,7 +617,7 @@ public class AdminMenu extends Menu {
                     }
 
                     public ItemStack getItem() {
-                        return ItemCreator.of(CompMaterial.OAK_DOOR, "&c&lReturn", new String[]{" ", "&7Return Back."}).make();
+                        return ItemCreator.of(CompMaterial.OAK_DOOR, "&c&lReturn", new String[]{" ", "&7Return Back."}).build().make();
                     }
                 };
                 this.changeIconButton = new Button() {
@@ -631,19 +625,16 @@ public class AdminMenu extends Menu {
                     }
 
                     public ItemStack getItem() {
-                        return ItemCreator.of(CompMaterial.valueOf(bondBase.getIcon()), "&3&lIcon", new String[]{"&eCurrent Icon: &3" + bondBase.getIcon(), "&7The material that represents", "&7the bond in the menus."}).make();
+                        return ItemCreator.of(CompMaterial.fromMaterial(Material.valueOf(bondBase.getIcon())), "&3&lIcon", new String[]{"&eCurrent Icon: &3" + bondBase.getIcon(), "&7The material that represents", "&7the bond in the menus."}).build().make();
                     }
                 };
             }
 
-            @Override
-            protected ItemStack convertToItemStack(CompMaterial material) {
-                return ItemCreator.of(CompMaterial.fromString(material.name()), "&3&l" + material.name(), new String[]{"&7This item will be the bond's", "&7display icon in all menus.", "  ", "&f(Click to Select)"}).glow(this.bondBase.getIcon().equals(material.name())).make();
-
+            protected ItemStack convertToItemStack(Material material) {
+                return ItemCreator.of(CompMaterial.fromMaterial(material), "&3&l" + material.name(), new String[]{"&7This item will be the bond's", "&7display icon in all menus.", "  ", "&f(Click to Select)"}).glow(this.bondBase.getIcon().equals(material.name())).build().make();
             }
 
-            @Override
-            protected void onPageClick(Player player, CompMaterial material, ClickType clickType) {
+            protected void onPageClick(Player player, Material material, ClickType clickType) {
                 if (clickType.isLeftClick()) {
                     this.bondBase.setIcon(material.name());
                     (AdminMenu.this.new EditBondMenu(this.bondBase)).displayTo(player);
@@ -651,18 +642,22 @@ public class AdminMenu extends Menu {
             }
 
             public ItemStack getItemAt(int slot) {
-                if (slot == this.getSize() - 1)
+                if (slot == this.getSize() - 1) {
                     return this.backButton.getItem();
-                else if (slot == this.getSize() - 5)
+                } else if (slot == this.getSize() - 5) {
                     return this.changeIconButton.getItem();
-                else {
+                } else {
                     boolean multiplePages = this.getPages().size() > 1;
-                    if (slot >= this.getSize() - 9 && slot != this.getSize() - 5 && slot != this.getSize() - 1)
+                    if (slot >= this.getSize() - 9 && slot != this.getSize() - 5 && slot != this.getSize() - 1) {
                         if (multiplePages) {
-                            if (slot != this.getSize() - 6 && slot != this.getSize() - 4)
-                                return ItemCreator.of(CompMaterial.GRAY_STAINED_GLASS_PANE, " ", new String[0]).make();
-                        } else if (this.getSize() != 4)
-                            return ItemCreator.of(CompMaterial.GRAY_STAINED_GLASS_PANE, " ", new String[0]).make();
+                            if (slot != this.getSize() - 6 && slot != this.getSize() - 4) {
+                                return ItemCreator.of(CompMaterial.GRAY_STAINED_GLASS_PANE, " ", new String[0]).build().make();
+                            }
+                        } else if (this.getSize() != 4) {
+                            return ItemCreator.of(CompMaterial.GRAY_STAINED_GLASS_PANE, " ", new String[0]).build().make();
+                        }
+                    }
+
                     return super.getItemAt(slot);
                 }
             }
@@ -1906,9 +1901,8 @@ public class AdminMenu extends Menu {
                 };
                 this.actionItemButton = new Button() {
                     public void onClickedInMenu(Player player, Menu menu, ClickType clickType) {
-                        if (clickType.isLeftClick()) {
-                            //new ActionItemMenu(bondBase, tierCache, patternCache, patternCache.getActionName()).displayTo(player);
-                        }
+                        if (clickType.isLeftClick())
+                            new ActionItemMenu(bondBase, tierCache, patternCache, patternCache.getActionName()).displayTo(player);
                     }
 
                     public ItemStack getItem() {
@@ -1949,6 +1943,118 @@ public class AdminMenu extends Menu {
                     }
 
                     return super.getItemAt(slot);
+                }
+            }
+
+            private class ActionItemMenu extends MenuPagged<Material> {
+                private Button backButton;
+                private Button changeActionItemButton;
+                private Button handButton;
+                private Button everythingButton;
+                private BondBase bondBase1;
+                private BondBase.TierCache tierCache;
+                private BondBase.TierCache.PatternCache patternCache;
+                private String actionName;
+
+                protected ActionItemMenu(BondBase bondBase1, BondBase.TierCache tierCache, BondBase.TierCache.PatternCache patternCache, final String actionName) {
+                    super((Iterable) Arrays.asList(Material.values()).stream().filter((material) -> {
+                        return NonItems.isAnItem(material);
+                    }).collect(Collectors.toList()));
+                    this.setTitle("&3&lSelect An Item");
+                    this.bondBase1 = bondBase1;
+                    this.tierCache = tierCache;
+                    this.patternCache = patternCache;
+                    this.actionName = actionName;
+                    this.backButton = new Button() {
+                        public void onClickedInMenu(Player player, Menu menu, ClickType clickType) {
+                            if (clickType.isLeftClick())
+                                new ActionListMenu(bondBase1, tierCache, patternCache).displayTo(player);
+                        }
+
+                        public ItemStack getItem() {
+                            return ItemCreator.of(CompMaterial.OAK_DOOR, "&c&lReturn", new String[]{" ", "&7Return Back."}).make();
+                        }
+                    };
+                    this.changeActionItemButton = new Button() {
+                        public void onClickedInMenu(Player player, Menu menu, ClickType clickType) {
+                        }
+
+                        public ItemStack getItem() {
+                            String actionItemName = bondBase1.getActionItemName(tierCache.getTier(), patternCache.getNumber());
+                            String icon = actionItemName;
+                            if (actionItemName.equals("Anything")) {
+                                icon = "BEACON";
+                            }
+
+                            if (actionItemName.equals("Hand")) {
+                                icon = "RABBIT_FOOT";
+                            }
+
+                            return ItemCreator.of(CompMaterial.fromMaterial(Material.valueOf(icon)), "&3&lItem In Hand", new String[]{"&eCurrent Item: &3" + actionItemName, "&7The item that must be held", "&7by the player when undergoing", "&7the action " + actionName, "&7to activate the pattern."}).build().make();
+                        }
+                    };
+                    this.handButton = new Button() {
+                        public void onClickedInMenu(Player player, Menu menu, ClickType clickType) {
+                            if (clickType.isLeftClick()) {
+                                bondBase1.setActionItem(tierCache.getTier(), patternCache.getNumber(), "Hand");
+                                new ActionItemMenu(bondBase1, tierCache, patternCache, actionName).displayTo(player);
+                            }
+                        }
+
+                        public ItemStack getItem() {
+                            String actionItemName = bondBase1.getActionItemName(tierCache.getTier(), patternCache.getNumber());
+                            return ItemCreator.of(CompMaterial.RABBIT_FOOT, "&3&lHand", new String[]{"&7The player must be holding", "&7an empty hand when undergoing", "&7the action " + actionName, "&7to activate the pattern.", "&cNote: &7The action RightClick", "&7won't work with an empty hand.", " ", "&f(Click to Change)"}).build().make();
+                        }
+                    };
+                    this.everythingButton = new Button() {
+                        public void onClickedInMenu(Player player, Menu menu, ClickType clickType) {
+                            if (clickType.isLeftClick()) {
+                                bondBase1.setActionItem(tierCache.getTier(), patternCache.getNumber(), "Anything");
+                                new ActionItemMenu(bondBase1, tierCache, patternCache, actionName).displayTo(player);
+                            }
+                        }
+
+                        public ItemStack getItem() {
+                            return ItemCreator.of(CompMaterial.BEACON, "&3&lAnything", new String[]{"&7The player can hold anything", "&7and when the player undergoes", "&7the action " + actionName, "&7the pattern will activate.", " ", "&f(Click to Change)"}).build().make();
+                        }
+                    };
+                }
+
+                protected ItemStack convertToItemStack(Material material) {
+                    CompMaterial item = CompMaterial.fromMaterial(Material.valueOf(material.name()));
+                    return ItemCreator.of(item, "&3&l" + material.name(), new String[]{"&7When a player undergoes the action", "&7" + this.actionName + " and holds this item,", "&7this pattern will be activated.", "  ", "&f(Click to Select)"}).glow(this.patternCache.getActionItemName().equals(material.name())).build().make();
+                }
+
+                protected void onPageClick(Player player, Material material, ClickType clickType) {
+                    if (clickType.isLeftClick()) {
+                        this.bondBase1.setActionItem(this.tierCache.getTier(), this.patternCache.getNumber(), material.name());
+                        new ActionItemMenu(this.bondBase1, this.tierCache, this.patternCache, this.actionName).displayTo(player);
+                    }
+                }
+
+                public ItemStack getItemAt(int slot) {
+                    if (slot == this.getSize() - 1) {
+                        return this.backButton.getItem();
+                    } else if (slot == this.getSize() - 5) {
+                        return this.changeActionItemButton.getItem();
+                    } else if (slot == this.getSize() - 7) {
+                        return this.everythingButton.getItem();
+                    } else if (slot == this.getSize() - 3) {
+                        return this.handButton.getItem();
+                    } else {
+                        boolean multiplePages = this.getPages().size() > 1;
+                        if (slot >= this.getSize() - 9 && slot != this.getSize() - 5 && slot != this.getSize() - 7 && slot != this.getSize() - 3 && slot != this.getSize() - 1) {
+                            if (multiplePages) {
+                                if (slot != this.getSize() - 6 && slot != this.getSize() - 4) {
+                                    return ItemCreator.of(CompMaterial.GRAY_STAINED_GLASS_PANE, " ", new String[0]).build().make();
+                                }
+                            } else if (this.getSize() != 4) {
+                                return ItemCreator.of(CompMaterial.GRAY_STAINED_GLASS_PANE, " ", new String[0]).build().make();
+                            }
+                        }
+
+                        return super.getItemAt(slot);
+                    }
                 }
             }
         }
@@ -2025,7 +2131,7 @@ public class AdminMenu extends Menu {
                     convertingLore.add("&f(Right Click to Edit)");
                 }
 
-                return ItemCreator.of(CompMaterial.valueOf(powerBase.getIcon()), "&3&l" + powerName, convertingLore).glow(this.patternCache.getPowerName().equals(powerName)).make();
+                return ItemCreator.of(CompMaterial.fromMaterial(Material.valueOf(powerBase.getIcon())), "&3&l" + powerName, convertingLore).glow(this.patternCache.getPowerName().equals(powerName)).make();
             }
 
             protected void onPageClick(Player player, String powerName, ClickType clickType) {
@@ -2220,15 +2326,14 @@ public class AdminMenu extends Menu {
                         return ItemCreator.of(CompMaterial.TNT, "&c&lDelete Power", new String[]{"&7Removes the power from", "&7all bonds and deletes the", "&7power from the power list.", " ", "&f(Click to Remove)"}).make();
                     }
                 };
-                this.iconButton = new Button() { //todo Item List...
+                this.iconButton = new Button() {
                     public void onClickedInMenu(Player player, Menu menu, ClickType clickType) {
-                        if (clickType.isLeftClick()) {
-                            //  (AdminMenu.this.new PowerSelectIconMenu(bondBase, tierCache, patternCache, powerName)).displayTo(player);
-                        }
+                        if (clickType.isLeftClick())
+                            new PowerSelectIconMenu(bondBase, tierCache, patternCache, powerName).displayTo(player);
                     }
 
                     public ItemStack getItem() {
-                        return ItemCreator.of(CompMaterial.valueOf(powerBase.getIcon()), "&3&lIcon", new String[]{"&eCurrent Icon: &3" + powerBase.getIcon(), "&7The material that represents", "&7this power in the menus.", " ", "&f(Click to Change)"}).make();
+                        return ItemCreator.of(CompMaterial.fromMaterial(Material.valueOf(powerBase.getIcon())), "&3&lIcon", new String[]{"&eCurrent Icon: &3" + powerBase.getIcon(), "&7The material that represents", "&7this power in the menus.", " ", "&f(Click to Change)"}).make();
                     }
                 };
                 this.loreButton = new Button() {
@@ -2561,6 +2666,80 @@ public class AdminMenu extends Menu {
 
                     public void onConversationEnd(SimpleConversation conversation, ConversationAbandonedEvent event) {
                         new PowerEditMenu(PowerExitCommandConversation.this.bondBase, PowerExitCommandConversation.this.tierCache, PowerExitCommandConversation.this.patternCache, PowerExitCommandConversation.this.powerName).displayTo(AdminMenu.this.getViewer());
+                    }
+                }
+            }
+
+            private class PowerSelectIconMenu extends MenuPagged<Material> {
+                private Button backButton;
+                private Button changeIconButton;
+                private BondBase base;
+                private BondBase.TierCache tierCache;
+                private BondBase.TierCache.PatternCache patternCache;
+                private String powerName;
+
+                protected PowerSelectIconMenu(BondBase base, BondBase.TierCache tierCache, BondBase.TierCache.PatternCache patternCache, final String powerName) {
+                    super((Iterable) Arrays.asList(Material.values()).stream().filter((material) -> {
+                        return NonItems.isAnItem(material);
+                    }).collect(Collectors.toList()));
+                    this.setTitle("&3&lSelect An Icon");
+                    this.base = base;
+                    this.tierCache = tierCache;
+                    this.patternCache = patternCache;
+                    this.powerName = powerName;
+                    this.backButton = new Button() {
+                        public void onClickedInMenu(Player player, Menu menu, ClickType clickType) {
+                            if (clickType.isLeftClick())
+                                new PowerEditMenu(base, tierCache, patternCache, powerName).displayTo(player);
+                        }
+
+                        public ItemStack getItem() {
+                            return ItemCreator.of(CompMaterial.OAK_DOOR, "&c&lReturn", new String[]{" ", "&7Return Back."}).build().make();
+                        }
+                    };
+                    this.changeIconButton = new Button() {
+                        public void onClickedInMenu(Player player, Menu menu, ClickType clickType) {
+                        }
+
+                        public ItemStack getItem() {
+                            PowerBase powerBase = PowerBase.getPower(powerName);
+                            return ItemCreator.of(CompMaterial.fromMaterial(Material.valueOf(powerBase.getIcon())), "&3&lIcon", new String[]{"&eCurrent Icon: &3" + powerBase.getIcon(), "&7The material that represents", "&7the power in the menus."}).make();
+                        }
+                    };
+                }
+
+                protected ItemStack convertToItemStack(Material material) {
+                    PowerBase powerBase = PowerBase.getPower(this.powerName);
+                    CompMaterial item = CompMaterial.fromMaterial(Material.valueOf(material.name()));
+                    return ItemCreator.of(item, "&3&l" + material.name(), new String[]{"&7This item will be the power's", "&7display icon in all menus.", "  ", "&f(Click to Select)"}).glow(powerBase.getIcon().equals(material.name())).make();
+                }
+
+                protected void onPageClick(Player player, Material material, ClickType clickType) {
+                    if (clickType.isLeftClick()) {
+                        PowerBase powerBase = PowerBase.getPower(this.powerName);
+                        powerBase.setIcon(material.name());
+                        new PowerEditMenu(this.base, this.tierCache, this.patternCache, this.powerName).displayTo(player);
+                    }
+                }
+
+                public ItemStack getItemAt(int slot) {
+                    if (slot == this.getSize() - 1) {
+                        return this.backButton.getItem();
+                    } else if (slot == this.getSize() - 5) {
+                        return this.changeIconButton.getItem();
+                    } else {
+                        boolean multiplePages = this.getPages().size() > 1;
+                        if (slot >= this.getSize() - 9 && slot != this.getSize() - 5 && slot != this.getSize() - 1) {
+                            if (multiplePages) {
+                                if (slot != this.getSize() - 6 && slot != this.getSize() - 4) {
+                                    return ItemCreator.of(CompMaterial.GRAY_STAINED_GLASS_PANE, " ", new String[0]).build().make();
+                                }
+                            } else if (this.getSize() != 4) {
+                                return ItemCreator.of(CompMaterial.GRAY_STAINED_GLASS_PANE, " ", new String[0]).build().make();
+                            }
+                        }
+
+                        return super.getItemAt(slot);
                     }
                 }
             }

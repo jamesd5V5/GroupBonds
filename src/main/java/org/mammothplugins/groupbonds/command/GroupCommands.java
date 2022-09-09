@@ -1,9 +1,11 @@
 package org.mammothplugins.groupbonds.command;
 
+import org.bukkit.Material;
 import org.mammothplugins.groupbonds.PlayerCache;
 import org.mammothplugins.groupbonds.bonds.BondBase;
 import org.mammothplugins.groupbonds.bonds.BondChat;
 import org.mammothplugins.groupbonds.menu.AdminMenu;
+import org.mammothplugins.groupbonds.menu.NonItems;
 import org.mammothplugins.groupbonds.patterns.PowerBase;
 import org.mineacademy.fo.Common;
 import org.mineacademy.fo.annotation.AutoRegister;
@@ -85,6 +87,45 @@ public final class GroupCommands extends SimpleCommand {
                 playerCache.addBond(bondBase, playerCache.getUniqueId());
 
                 Common.tell(getSender(), "Added: group " + playerCache.getFriend(bondBase));
+                foundCommand = true;
+            }
+            if ("item".equalsIgnoreCase(this.args[0])) {
+                for (Material material : Material.values()) {
+                    Common.broadcast(material.name());
+                }
+                foundCommand = true;
+            }
+            if ("itemi".equalsIgnoreCase(this.args[0])) { //if (!material.equals(null))
+                for (Material material : Material.values()) {
+                    if (!material.name().equals("AIR") && !material.name().equals("GRASS_PATH") && !material.name().contains("LEGACY"))
+                        Common.broadcast("IsItem: " + material.name());
+                }
+                foundCommand = true;
+            }
+            if ("size".equalsIgnoreCase(this.args[0])) { //if (!material.equals(null))
+                int count = 0;
+                for (Material material : Material.values()) {
+                    if (!material.name().equals("AIR") && !material.name().equals("GRASS_PATH")) {
+                        if (NonItems.isAnItem(material)) {
+                            count++;
+                            Common.broadcast(material.name());
+                        }
+                        /*
+                        boolean passed = true;
+                        for (NonItems nn : NonItems.values()) {
+                            if (nn.name().equals(material.name())) {
+                                passed = false;
+                            }
+                        }
+                        if (passed) {
+                            count++;
+                        } else {
+                            Common.broadcast(material.name() + " did not pass.");
+                        }
+                         */
+                    }
+                }
+                Common.broadcast("Size: " + count);
                 foundCommand = true;
             }
         }
