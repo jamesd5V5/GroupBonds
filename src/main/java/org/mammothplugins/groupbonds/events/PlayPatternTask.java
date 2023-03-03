@@ -110,15 +110,16 @@ public class PlayPatternTask extends BukkitRunnable {
                 powerBase = PowerBase.getPower(this.patternCache.getPowerName());
             }
 
-            if (playShape) {
+            if (playShape)
                 shapeBase.playShape(this.player, friend, this.patternCache);
-            }
 
             if (playPower)
                 powerBase.playPower(this.player, friend, bondBase, appliedTierCache, this.patternCache, actionName, this.patternCache.getStrength());
+
         }
         if (resetEvent)
             this.resetEvent(this.player, this.bondCache, this.patternCache);
+
     }
 
     public boolean isACancelledEvent() {

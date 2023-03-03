@@ -12,9 +12,6 @@ import org.mineacademy.fo.annotation.AutoRegister;
 import org.mineacademy.fo.command.SimpleCommand;
 import org.mineacademy.fo.remain.CompSound;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @AutoRegister
 public final class GroupCommands extends SimpleCommand {
 
@@ -151,16 +148,6 @@ public final class GroupCommands extends SimpleCommand {
             }
 
 
-        }
-        if ("change".equalsIgnoreCase(this.args[0])) {
-            String lore = this.args[2];
-            BondBase bondBase = BondBase.getByName(args[1]);
-
-            List<String> lores = new ArrayList<>();
-            lores.add(lore);
-            bondBase.setLore(lores);
-            Common.tell(sender, "&2" + bondBase.getName() + " lore was set to " + args[2]);
-            foundCommand = true;
         }
         if (!foundCommand) {
             Common.tell(this.getPlayer(), new String[]{"&cWrong Arguments! Use /b for help."});

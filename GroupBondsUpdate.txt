@@ -14,3 +14,6 @@ TODO:
 Possible:
 = Display button: With NPCS?
 = Advanced settings in Menus/ easier to understand
+
+
+Fireball does not seem to work?

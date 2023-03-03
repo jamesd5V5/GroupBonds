@@ -8,8 +8,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.mammothplugins.groupbonds.GroupBonds;
 import org.mammothplugins.groupbonds.PlayerCache;
 import org.mammothplugins.groupbonds.bonds.BondBase;
-import org.mammothplugins.groupbonds.patterns.powers.BlindPower;
-import org.mammothplugins.groupbonds.patterns.powers.TossPower;
+import org.mammothplugins.groupbonds.patterns.powers.*;
+import org.mineacademy.fo.Common;
 import org.mineacademy.fo.FileUtil;
 import org.mineacademy.fo.exception.FoException;
 import org.mineacademy.fo.remain.CompSound;
@@ -24,9 +24,16 @@ public class PowerBase extends YamlConfig {
     public static final List<String> doesNotUseStrength = new ArrayList();
     public static Map<Player, PowerBase> thoseWhoLeftEarly = new HashMap();
 
-    //When Adding a new Power, Make sure to edit getPower()...
+    //When Adding a new Power, Make sure to edit getPower()...!!!!!!! or in Constructor!
     public static final PowerBase TOSS = new TossPower();
+
     public static final PowerBase BLIND = new BlindPower();
+    public static final PowerBase DMGRES = new DamageResistancePower();
+    public static final PowerBase FIREBALL = new FireBallPower();
+    public static final PowerBase FOOD = new FoodPower();
+    public static final PowerBase HEAL = new HealPower();
+    public static final PowerBase WITHER = new WolfPower();
+    public static final PowerBase WOLVES = new WolfPower();
 
     private String name;
     private String icon;
@@ -44,11 +51,18 @@ public class PowerBase extends YamlConfig {
         this.setHeader("GroupBonds\nPower: " + name);
         this.save();
 
-        if (!name.equals("Toss") && !name.equals("Heal") && !name.equals("Speed") && !name.equals("Strength") && !name.equals("Summon Wolves") && !name.equals("Jump") && !name.equals("Food") && !name.equals("Poison") && !name.equals("Teleport") && !name.equals("Fireball") && !name.equals("Health Equalizer") && !name.equals("Invisibility") && !name.equals("Damage Resistance") && !name.equals("Leap") && !name.equals("Wither") && !name.equals("Miner Fatigue") && !name.equals("TNT") && !name.equals("Blind")) {
+        if (!name.equals("Toss") && !name.equals("Heal") && !name.equals("Speed")
+                && !name.equals("Strength") && !name.equals("Summon Wolves") && !name.equals("Jump")
+                && !name.equals("Food") && !name.equals("Poison") && !name.equals("Teleport")
+                && !name.equals("Fireball") && !name.equals("Health Equalizer")
+                && !name.equals("Invisibility") && !name.equals("Damage Resistance")
+                && !name.equals("Leap") && !name.equals("Wither") && !name.equals("Miner Fatigue")
+                && !name.equals("TNT") && !name.equals("Blind")) {
             if (!powers.containsKey(name) && !customPowerNames.contains(name)) {
                 customPowerNames.add(name);
             }
-        } else if (name.equals("Teleport") || name.equals("Fireball") || name.equals("Health Equalizer") || name.equals("Invisibility") || name.equals("Blind")) {
+        } else if (name.equals("Teleport")
+                || name.equals("Fireball") || name.equals("Health Equalizer") || name.equals("Invisibility") || name.equals("Blind")) {
             if (!doesNotUseStrength.contains(name))
                 doesNotUseStrength.add(name);
         }
@@ -131,10 +145,21 @@ public class PowerBase extends YamlConfig {
                     return powerBase;
                 else {
                     if (name.equals("Blind"))
-                        return new BlindPower();
-
+                        return BLIND;
                     if (name.equals("Toss"))
-                        return new TossPower();
+                        return TOSS;
+                    if (name.equals("Heal"))
+                        return HEAL;
+                    if (name.equals("Fireball"))
+                        return FIREBALL;
+                    if (name.equals("Food"))
+                        return FOOD;
+                    if (name.equals("Damage Resistance"))
+                        return DMGRES;
+                    if (name.equals("Summon Wolves"))
+                        return WOLVES;
+                    if (name.equals("Wither"))
+                        return WITHER;
                 }
             }
         }
@@ -240,7 +265,9 @@ public class PowerBase extends YamlConfig {
     }
 
     public void playPower(Player player, Player friend, BondBase bondBase, BondBase.TierCache tierCache, BondBase.TierCache.PatternCache patternCache, String actionName, int strength) {
+        Common.broadcast("pPower, dont want, we want in override function");
         if ((actionName.equals("AUTO") || ActionBase.getByName(actionName).getType().equals("General")) && customPowerNames.contains(this.name)) {
+            Common.broadcast("Inside..");
             if (!this.command.equals("NONE")) {
                 if (this.command.startsWith("/"))
                     this.command = this.command.substring(1);
